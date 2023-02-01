@@ -4,8 +4,8 @@ ThisBuild / scalaVersion := "2.13.10"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "my-akka",
-    idePackagePrefix := Some("com.my.sandbox")
+    name := "my-akka"
+//    idePackagePrefix := Some("com.my.sandbox")
   )
 
 libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % "2.7.0"

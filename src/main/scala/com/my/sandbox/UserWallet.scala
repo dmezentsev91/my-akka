@@ -1,10 +1,8 @@
 package com.my.sandbox
-package producer
-
-import producer.WalletsManager.{Deposit, TransactionCmd, WalletCmd, Withdrawal}
 
 import akka.actor.typed.{Behavior, PostStop, Signal}
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
+import com.my.sandbox.WalletsManager.{Deposit, TransactionCmd, WalletCmd, Withdrawal}
 import com.typesafe.scalalogging.LazyLogging
 
 object UserWallet {

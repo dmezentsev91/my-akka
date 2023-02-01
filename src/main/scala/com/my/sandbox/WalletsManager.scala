@@ -1,11 +1,9 @@
 package com.my.sandbox
-package producer
 
-import producer.Supervisor.MyCommand
-import producer.WalletsManager.{TransactionCmd, WalletCmd}
-
-import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
+import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
+import com.my.sandbox.Supervisor.MyCommand
+import com.my.sandbox.WalletsManager.{TransactionCmd, WalletCmd}
 import com.typesafe.scalalogging.LazyLogging
 
 import java.time.LocalDateTime

@@ -1,9 +1,8 @@
 package com.my.sandbox
-package producer
 
 import akka.actor.typed.ActorSystem
-import com.my.sandbox.producer.Supervisor.MyCommand
-import com.my.sandbox.producer.WalletsManager.{Deposit, TransactionCmd}
+import com.my.sandbox.Supervisor.MyCommand
+import com.my.sandbox.WalletsManager.{Deposit, TransactionCmd}
 import com.typesafe.config.ConfigFactory
 
 import java.time.LocalDateTime

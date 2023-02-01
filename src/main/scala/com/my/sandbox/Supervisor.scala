@@ -1,11 +1,9 @@
-package com.my.sandbox.producer
+package com.my.sandbox
 
-import akka.actor.typed.{ActorRef, ActorSystem, Behavior, PostStop, Signal}
-import akka.actor.typed.scaladsl.AbstractBehavior
-import akka.actor.typed.scaladsl.ActorContext
-import akka.actor.typed.scaladsl.Behaviors
-import com.my.sandbox.producer.Supervisor.MyCommand
-import com.my.sandbox.producer.WalletsManager.WalletCmd
+import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
+import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
+import com.my.sandbox.Supervisor.MyCommand
+import com.my.sandbox.WalletsManager.WalletCmd
 import com.typesafe.scalalogging.LazyLogging
 
 object Supervisor {

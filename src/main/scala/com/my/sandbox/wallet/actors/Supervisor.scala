@@ -1,15 +1,16 @@
-package com.my.sandbox
+package com.my.sandbox.wallet.actors
 
-import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
-import com.my.sandbox.Supervisor.MyCommand
-import com.my.sandbox.WalletsManager.WalletCmd
+import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
+import com.my.sandbox.wallet.actors.Supervisor.MyCommand
+import com.my.sandbox.wallet.actors.WalletsManager.WalletCmd
+import com.my.sandbox.wallet.kafka.UserTransactionProducer
 import com.typesafe.scalalogging.LazyLogging
 
 object Supervisor {
-  def apply(): Behavior[MyCommand] = {
+  def apply(userTransactionProducer: UserTransactionProducer): Behavior[MyCommand] = {
     Behaviors.setup[MyCommand] { context =>
-      val walletsManager = context.spawn(WalletsManager(), "wallet-manager")
+      val walletsManager = context.spawn(WalletsManager(userTransactionProducer), "wallet-manager")
       new Supervisor(context, walletsManager)
     }
   }

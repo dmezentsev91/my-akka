@@ -1,18 +1,18 @@
-package com.my.sandbox
+package com.my.sandbox.wallet.actors
 
-import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
-import com.my.sandbox.Supervisor.MyCommand
-import com.my.sandbox.WalletsManager.{TransactionCmd, WalletCmd}
+import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
+import com.my.sandbox.wallet.actors.Supervisor.MyCommand
+import com.my.sandbox.wallet.actors.WalletsManager.{TransactionCmd, WalletCmd}
+import com.my.sandbox.wallet.kafka.UserTransactionProducer
 import com.typesafe.scalalogging.LazyLogging
 
 import java.time.LocalDateTime
 import scala.collection.mutable
 
 object WalletsManager {
-  def apply(): Behavior[WalletCmd] = {
-    //    ActorSystem[WalletCmd](IotWalletsManager(), "iot-system")
-    Behaviors.setup[WalletCmd](context => new WalletsManager(context))
+  def apply(userTransactionProducer: UserTransactionProducer): Behavior[WalletCmd] = {
+    Behaviors.setup[WalletCmd](context => new WalletsManager(context, userTransactionProducer))
   }
 
   trait WalletCmd extends MyCommand
@@ -27,7 +27,7 @@ object WalletsManager {
   
 }
 
-class WalletsManager(context: ActorContext[WalletCmd]) extends AbstractBehavior[WalletCmd](context) with LazyLogging {
+class WalletsManager(context: ActorContext[WalletCmd], userTransactionProducer: UserTransactionProducer) extends AbstractBehavior[WalletCmd](context) with LazyLogging {
   logger.info("WalletWalletsManager started")
   
   val userWalletsMap = mutable.Map[String, ActorRef[WalletCmd]]()
@@ -37,7 +37,7 @@ class WalletsManager(context: ActorContext[WalletCmd]) extends AbstractBehavior[
       userWalletsMap.get(transactionCmd.userUUID) match {
         case Some(userActor) => userActor ! transactionCmd
         case None =>
-          val userActor = context.spawn(UserWallet(), s"user-wallet-${transactionCmd.userUUID}")
+          val userActor = context.spawn(UserWallet(userTransactionProducer), s"user-wallet-${transactionCmd.userUUID}")
           userWalletsMap.put(transactionCmd.userUUID, userActor)
           userActor ! transactionCmd
       }

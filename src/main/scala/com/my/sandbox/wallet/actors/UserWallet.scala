@@ -1,18 +1,20 @@
-package com.my.sandbox
+package com.my.sandbox.wallet.actors
 
-import akka.actor.typed.{Behavior, PostStop, Signal}
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
-import com.my.sandbox.WalletsManager.{Deposit, TransactionCmd, WalletCmd, Withdrawal}
+import akka.actor.typed.{Behavior, PostStop, Signal}
+import com.my.sandbox.wallet.actors.WalletsManager.{Deposit, TransactionCmd, WalletCmd, Withdrawal}
+import com.my.sandbox.wallet.kafka.UserTransactionProducer
 import com.typesafe.scalalogging.LazyLogging
 
 object UserWallet {
-  def apply(): Behavior[WalletCmd] = {
-    Behaviors.setup[WalletCmd](context => new UserWallet(context, 0.0))
+  def apply(userTransactionProducer: UserTransactionProducer): Behavior[WalletCmd] = {
+    Behaviors.setup[WalletCmd](context => new UserWallet(context, 0.0)(userTransactionProducer))
   }
 
 }
 
-class UserWallet(context: ActorContext[WalletCmd], balance: BigDecimal) extends AbstractBehavior[WalletCmd](context) with LazyLogging {
+class UserWallet(context: ActorContext[WalletCmd], balance: BigDecimal)
+                (implicit userTransactionProducer: UserTransactionProducer) extends AbstractBehavior[WalletCmd](context) with LazyLogging {
   logger.info("UserWallet started")
 
   override def onMessage(msg: WalletCmd): Behavior[WalletCmd] = msg match {

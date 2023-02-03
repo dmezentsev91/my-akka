@@ -1,9 +1,10 @@
 package com.my.sandbox.wallet
 
 import akka.actor.typed.ActorSystem
+import com.my.sandbox.model.Events.Deposit
 import com.my.sandbox.wallet.actors.Supervisor
 import com.my.sandbox.wallet.actors.Supervisor.MyCommand
-import com.my.sandbox.wallet.actors.WalletsManager.{Deposit, TransactionCmd}
+import com.my.sandbox.wallet.actors.WalletsManager.TransactionCmd
 import com.my.sandbox.wallet.kafka.UserTransactionProducer
 import com.typesafe.config.ConfigFactory
 

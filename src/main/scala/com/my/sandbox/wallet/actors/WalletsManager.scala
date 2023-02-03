@@ -2,6 +2,7 @@ package com.my.sandbox.wallet.actors
 
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
+import com.my.sandbox.model.Events.{TransactionType, UserTransactionEvent}
 import com.my.sandbox.wallet.actors.Supervisor.MyCommand
 import com.my.sandbox.wallet.actors.WalletsManager.{TransactionCmd, WalletCmd}
 import com.my.sandbox.wallet.kafka.UserTransactionProducer
@@ -17,19 +18,22 @@ object WalletsManager {
 
   trait WalletCmd extends MyCommand
 
-  trait TransactionType
-
-  case object Deposit extends TransactionType
-
-  case object Withdrawal extends TransactionType
 
   case class TransactionCmd(uuid: String, userUUID: String, value: BigDecimal, transactionType: TransactionType, time: LocalDateTime, invoiceUUID: String) extends WalletCmd
-  
+
+  object TransactionCmd {
+    implicit class TransactionOps(cmd: TransactionCmd) {
+
+      import cmd._
+
+      def toEvent = UserTransactionEvent(uuid, userUUID, value, transactionType, time, invoiceUUID)
+    }
+  }
 }
 
 class WalletsManager(context: ActorContext[WalletCmd], userTransactionProducer: UserTransactionProducer) extends AbstractBehavior[WalletCmd](context) with LazyLogging {
   logger.info("WalletWalletsManager started")
-  
+
   val userWalletsMap = mutable.Map[String, ActorRef[WalletCmd]]()
 
   override def onMessage(msg: WalletCmd): Behavior[WalletCmd] = msg match {

@@ -2,7 +2,8 @@ package com.my.sandbox.wallet.actors
 
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 import akka.actor.typed.{Behavior, PostStop, Signal}
-import com.my.sandbox.wallet.actors.WalletsManager.{Deposit, TransactionCmd, WalletCmd, Withdrawal}
+import com.my.sandbox.model.Events.{Deposit, UserTransactionEvent, Withdrawal}
+import com.my.sandbox.wallet.actors.WalletsManager.{TransactionCmd, WalletCmd}
 import com.my.sandbox.wallet.kafka.UserTransactionProducer
 import com.typesafe.scalalogging.LazyLogging
 
@@ -22,6 +23,7 @@ class UserWallet(context: ActorContext[WalletCmd], balance: BigDecimal)
       logger.info(s"Transaction: $transactionCmd")
       val updatedWallet = transactionCmd.transactionType match {
         case Deposit =>
+          userTransactionProducer.sendEvent(transactionCmd.toEvent)
           new UserWallet(context, balance + transactionCmd.value)
         case Withdrawal if transactionCmd.value <= balance =>
           new UserWallet(context, balance - transactionCmd.value)

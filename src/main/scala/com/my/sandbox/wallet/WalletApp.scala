@@ -29,8 +29,13 @@ object WalletApp extends App with LazyLogging {
   implicit val scheduler: Scheduler = system.scheduler
   implicit val ec: ExecutionContext = system.executionContext
 
-  private def cmd(replyTo: ActorRef[WalletResp]): TransactionCmd = TransactionCmd(UUID.randomUUID().toString, UUID.randomUUID().toString, 100.0, Deposit, LocalDateTime.now(), UUID.randomUUID().toString, replyTo)
+  private def cmd(replyTo: ActorRef[WalletResp]): TransactionCmd = {
+    val userUUID = "5dbd790b-f945-4ea9-b6b4-9b30884288c9"
+    TransactionCmd(UUID.randomUUID().toString, userUUID, 100.0, Deposit, LocalDateTime.now(), UUID.randomUUID().toString, replyTo)
+  }
 
+
+  Thread.sleep(30000)
   system.ask[WalletResp](replyTo => cmd(replyTo)).onComplete {
     case Success(value: TransactionConfirm) => logger.info(value.toString)
     case Success(value: TransactionFailed) => logger.info(value.toString)

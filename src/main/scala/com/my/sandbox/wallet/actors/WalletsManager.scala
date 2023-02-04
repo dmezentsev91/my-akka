@@ -47,7 +47,7 @@ class WalletsManager(context: ActorContext[WalletCmd], userTransactionProducer: 
       userWalletsMap.get(transactionCmd.userUUID) match {
         case Some(userActor) => userActor ! transactionCmd
         case None =>
-          val userActor = context.spawn(UserWallet(userTransactionProducer), s"user-wallet-${transactionCmd.userUUID}")
+          val userActor = context.spawn(UserWallet(transactionCmd.userUUID, userTransactionProducer), s"user-wallet-${transactionCmd.userUUID}")
           userWalletsMap.put(transactionCmd.userUUID, userActor)
           userActor ! transactionCmd
       }

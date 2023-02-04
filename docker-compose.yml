@@ -32,3 +32,9 @@ services:
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
 
+  cassandra:
+    image: cassandra:4.0.3
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=akka-cassandra-cluster

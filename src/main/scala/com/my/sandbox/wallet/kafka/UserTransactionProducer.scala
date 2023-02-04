@@ -1,6 +1,6 @@
 package com.my.sandbox.wallet.kafka
 
-import com.my.sandbox.model.Events.UserTransactionEvent
+import com.my.sandbox.model.Events.UserTransactionKE
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.syntax.EncoderOps
 import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
@@ -20,7 +20,7 @@ class UserTransactionProducer extends LazyLogging{
   private val producer = new KafkaProducer[String, String](kafkaProducerProps)
 
 
-  def sendEvent(userTransaction: UserTransactionEvent) = {
+  def sendEvent(userTransaction: UserTransactionKE) = {
     val record = new ProducerRecord[String, String]("users-transactions", userTransaction.uuid, userTransaction.asJson.noSpaces)
     val sent = producer.send(record, new compareProducerCallback)
     producer.flush()

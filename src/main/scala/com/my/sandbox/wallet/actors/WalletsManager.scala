@@ -2,8 +2,9 @@ package com.my.sandbox.wallet.actors
 
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
-import com.my.sandbox.model.Events.{TransactionType, UserTransactionEvent}
+import com.my.sandbox.model.Events.{TransactionType, UserTransactionKE}
 import com.my.sandbox.wallet.actors.Supervisor.MyCommand
+import com.my.sandbox.wallet.actors.UserWallet.TransactionAE
 import com.my.sandbox.wallet.actors.WalletsManager.{TransactionCmd, WalletCmd}
 import com.my.sandbox.wallet.kafka.UserTransactionProducer
 import com.typesafe.scalalogging.LazyLogging
@@ -18,15 +19,20 @@ object WalletsManager {
 
   trait WalletCmd extends MyCommand
 
+  case class TransactionCmd(uuid: String, userUUID: String, value: BigDecimal, transactionType: TransactionType, time: LocalDateTime, invoiceUUID: String, replyTo: ActorRef[WalletResp]) extends WalletCmd
 
-  case class TransactionCmd(uuid: String, userUUID: String, value: BigDecimal, transactionType: TransactionType, time: LocalDateTime, invoiceUUID: String) extends WalletCmd
+  sealed trait WalletResp extends MyCommand
+
+  case class TransactionConfirm(uuid: String, balance: BigDecimal) extends WalletResp
+  case class TransactionFailed(reason: String) extends WalletResp
 
   object TransactionCmd {
     implicit class TransactionOps(cmd: TransactionCmd) {
 
       import cmd._
 
-      def toEvent = UserTransactionEvent(uuid, userUUID, value, transactionType, time, invoiceUUID)
+      def toKafkaEvent = UserTransactionKE(uuid, userUUID, value, transactionType, time, invoiceUUID)
+      def toAkkaEvent = TransactionAE(uuid, userUUID, value, transactionType, time, invoiceUUID)
     }
   }
 }

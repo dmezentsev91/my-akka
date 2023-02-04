@@ -19,10 +19,10 @@ object Events {
   }
 
 
-  case class UserTransactionEvent(uuid: String, userUUID: String, value: BigDecimal, transactionType: TransactionType, time: LocalDateTime, invoiceUUID: String)
+  case class UserTransactionKE(uuid: String, userUUID: String, value: BigDecimal, transactionType: TransactionType, time: LocalDateTime, invoiceUUID: String)
 
-  object UserTransactionEvent {
+  object UserTransactionKE {
 
-    implicit val decoder: Codec[UserTransactionEvent] = deriveCodec[UserTransactionEvent]
+    implicit val decoder: Codec[UserTransactionKE] = deriveCodec[UserTransactionKE]
   }
 }
